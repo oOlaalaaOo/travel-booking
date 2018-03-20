@@ -78,9 +78,9 @@
       </h6>
 
       <li class="nav-item">
-        <a class="nav-link" href="#">
+        <a class="nav-link" href="{{ route('admin.report') }}" @if($active_link == 'report') active @endif">
           <span data-feather="bar-chart-2"></span>
-          Sales
+          Reports
         </a>
       </li>
     </ul>

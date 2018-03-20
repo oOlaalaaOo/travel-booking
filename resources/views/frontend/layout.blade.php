@@ -7,6 +7,7 @@
     	<br /><br /><br />
     	<div id="app">
 	        @yield('content')
+            <notifications group="frontend" position="top right" animation-type="velocity" />
 	    </div>
     </div>
 	

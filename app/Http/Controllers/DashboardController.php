@@ -13,8 +13,11 @@ class DashboardController extends Controller
 
     public function dashboard()
     {
+    	$bookings_today = \App\Booking::get();
+
     	return view('backend.pages.dashboard', [
-    		'active_link' => 'dashboard'
+    		'active_link' => 'dashboard',
+    		'bookings_today' => $bookings_today
     	]);
     }
 }

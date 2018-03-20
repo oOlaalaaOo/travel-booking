@@ -1,9 +1,15 @@
 <?php
 Route::get('/', function () {
 	$tours = \App\Tour::all();
+	$site_name = \DB::table('configuration_contents')->where('title', 'site_name')->first();
+	$book_guide = \DB::table('configuration_contents')->where('title', 'book_guide')->first();
+    $posts = \App\Post::latest()->take(3)->get();
     return view('frontend.pages.home', [
     	'active_link' => 'home',
-    	'tours' => $tours
+    	'tours' => $tours,
+    	'site_name' => $site_name->content,
+    	'book_guide' => $book_guide->content,
+        'posts' => $posts
     ]);
 })->name('home');
 
@@ -27,6 +33,7 @@ Route::get('/admin/dashboard', 'DashboardController@dashboard')->name('admin.das
 Route::get('/admin/tour/all', 'TourController@all_view')->name('admin.tour.all-view');
 
 Route::post('/admin/tour/all', 'TourController@all')->name('admin.tour.all');
+Route::post('/admin/tour/search', 'TourController@search')->name('admin.tour.search');
 
 Route::get('/admin/tour/show/{tour_id}', 'TourController@show_view')->name('admin.tour.show-view');
 
@@ -83,3 +90,20 @@ Route::post('/admin/site-contents/update', 'PageController@site_contents_update'
 Route::post('/booking/submit', 'BookingController@submit')->name('booking.submit');
 Route::post('/admin/booking/all', 'BookingController@all')->name('admin.booking.all');
 Route::get('/admin/booking/all', 'BookingController@all_view')->name('admin.booking.all-view');
+
+Route::get('/booking/complete/{booking_no}', 'BookingController@complete_view')->name('booking.complete-view');
+
+Route::post('/booking/complete', 'BookingController@complete')->name('booking.complete');
+Route::get('/booking/thank-you', 'BookingController@thank_you')->name('booking.thank-you');
+
+Route::get('/booking/show/{booking_id}', 'BookingController@show')->name('booking.show');
+Route::get('/booking/show/payed/{booking_no}', 'BookingController@show_payed')->name('booking.show.payed');
+
+Route::post('/booking/status/update', 'BookingController@status_update')->name('booking.status.update');
+
+Route::post('/contact-us/send', 'PageController@send_contact_us')->name('contact-us.send');
+
+Route::get('/admin/report', 'ReportController@report')->name('admin.report');
+Route::get('/admin/report/bookings', 'ReportController@booking_report')->name('admin.report.booking');
+
+Route::post('/admin/photos/add', 'TourPhotoController@add')->name('admin.photos.add');

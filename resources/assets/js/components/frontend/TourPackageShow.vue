@@ -8,7 +8,22 @@
                     <div class="card-body">
                         <button class="btn btn-danger btn-block" v-b-modal.booking><i class="fa fa-calendar"></i> Book this</button>
                         <br />
-                        <h5 class="card-title">{{ tour.name }}</h5>
+                        <div class="row">
+                          
+                            <vue-images :imgs="tour.photos"
+                                        :modalclose="modalclose"
+                                        :keyinput="keyinput"
+                                        :mousescroll="mousescroll"
+                                        :showclosebutton="showclosebutton"
+                                        :showcaption="showcaption"
+                                        :imagecountseparator="imagecountseparator"
+                                        :showimagecount="showimagecount"
+                                        :showthumbnails="showthumbnails">
+                            </vue-images>
+                        </div>
+                        <hr>
+                        <h4 class="card-title">{{ tour.name }}</h4>
+                        <h5 class="card-title">{{ formatDate(tour.from_date) }} - {{ formatDate(tour.to_date) }}</h5>
                         <span class="card-text" v-html="tour.description"></span>
                         
                     </div>
@@ -47,7 +62,7 @@
         </div>
         <br />
 
-        <b-modal id="booking" hide-footer size="lg" centered :title="tour.name">
+        <b-modal id="booking" ref="booking" hide-footer size="lg" centered :title="tour.name">
             <form @submit.prevent="submitBooking">
                 <div class="form-group">
                     <div class="form-group">
@@ -55,14 +70,16 @@
                     </div>
                     <label>Travel Date</label>
                     <div class="row">
-                        
-                        <div class="col-sm-2">
+                        <div class="col-sm-12">
+                            <datepicker input-class="form-control" :disabled="disabled" v-model="selectedDate"></datepicker>
+                        </div>
+                        <!-- <div class="col-sm-2">
                             <select 
                             class="form-control" 
                             name="month" 
                             v-model="month" 
                             v-validate="'required'" 
-                            :class="{'input': true, 'is-invalid': errors.has('month') }">
+                            :class="{'input': true, 'is-invalid': errors.has('month') }" :disabled="disabled">
                                 <option value="">Month</option>
                                 <option value="01">Jan</option>
                                 <option value="02">Feb</option>
@@ -141,7 +158,7 @@
                             <div class="invalid-feedback">
                                 {{ errors.first('year') }}
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                 </div>
                 <div class="form-group">
@@ -234,6 +251,7 @@
                         {{ errors.first('email') }}
                     </div>
                 </div>
+
                 <div class="form-group">
                     <label>Contact #</label>
                     <input
@@ -251,8 +269,104 @@
                     </div>
                 </div>
                 
+                <div class="form-group">
+                    <label>Nationality</label>
+                    <select 
+                    class="form-control" 
+                    name="nationality"
+                    id="nationality"
+                    v-model="nationality"
+                    v-validate="'required'"
+                    :class="{'input': true, 'is-invalid': errors.has('nationality') }"
+                    >
+                        <option value="">Select</option>
+                        <option value="Afghan">Afghan</option>
+                        <option value="Argentine" >Argentine</option>
+                        <option value="Spanish" >Spanish</option></option>
+                        <option value="Australian" >Australian</option>
+                        <option value="Belgian" >Belgian</option>
+                        <option value="Bolivian">Bolivian</option>
+                        <option value="Brazilian">Brazilian</option>
+                        <option value="Cambodian"f>Cambodian</option>
+                        <option value="Cameroonian">Cameroonian</option>
+                        <option value="Canadian" >Canadian</option>
+                        <option value="Chilean">Chilean</option>
+                        <option value="Chinese">Chinese</option>
+                        <option value="Colombian">Colombian</option>
+                        <option value="Costa Rican">Costa Rican</option>
+                        <option value="Cuban">Cuban</option>
+                        <option value="Danish">Danish</option>
+                        <option value="Dominican">Dominican</option>
+                        <option value="Ecuadorian">Ecuadorian</option>
+                        <option value="Egyptian">Egyptian</option>
+                        <option value="Salvadorian">Salvadorian </option>
+                        <option value="English">English </option>
+                        <option value="Estonian">Estonian   </option>
+                        <option value="Ethiopian">Ethiopian </option>
+                        <option value="Finnish">Finnish </option>
+                        <option value="French">French   </option>
+                        <option value="German">German   </option>
+                        <option value="Ghanaian">Ghanaian   </option>
+                        <option value="Greek">Greek </option>
+                        <option value="Guatemalan">Guatemalan   </option>
+                        <option value="Haitian">Haitian  </option>
+                        <option value="Honduran">Honduran   </option>
+                        <option value="Indonesian">Indonesian   </option>
+                        <option value="Iranian" >Iranian </option>
+                        <option value="Irish" >Irish </option>
+                        <option value="Israeli">Israeli </option>
+                        <option value="Italian">Italian </option>
+                        <option value="Japanese">Japanese   </option>
+                        <option value="Jordanian">Jordanian </option>
+                        <option value="Kenyan" f>Kenyan   </option>
+                        <option value="Laotian" >Laotian </option>
+                        <option value="Latvian">Latvian </option>
+                        <option value="Lebanese">Lebanese   </option>
+                        <option value="Lithuanian">Lithuanian   </option>
+                        <option value="Malaysian">Malaysian  </option>
+                        <option value="Mexican">Mexican </option>
+                        <option value="Moroccan">Moroccan   </option>
+                        <option value="Dutch">Dutch </option>
+                        <option value="New Zealander">  New Zealander   </option>
+                        <option value="Nicaraguan">Nicaraguan   </option>
+                        <option value="Norwegian">  Norwegian   </option>
+                        <option value="Panamanian"> Panamanian  </option>
+                        <option value="Paraguayan"> Paraguayan  </option>
+                        <option value="Peruvian">Peruvian   </option>
+                        <option value="Filipino" >Filipino   </option>
+                        <option value="Polish" >Polish   </option>
+                        <option value="Portuguese">Portuguese   </option>
+                        <option value="Puerto Rican">Puerto Rican   </option>
+                        <option value="Romanian">Romanian   </option>
+                        <option value="Russian">Russian </option>
+                        <option value="Saudi">Saudi </option>
+                        <option value="Scottish">Scottish   </option>
+                        <option value="Korean" >Korean   </option>
+                        <option value="Spanish">Spanish </option>
+                        <option value="Swedish">Swedish </option>
+                        <option value="Swiss">Swiss  </option>
+                        <option value="Taiwanese">Taiwanese </option>
+                        <option value="Tajik">Tajik  </option>
+                        <option value="Thai">Thai   </option>
+                        <option value="Turkish" >Turkish </option>
+                        <option value="Ukrainian" >Ukrainian </option>
+                        <option value="British">British </option>
+                        <option value="American">American   </option>
+                        <option value="Uruguayan">Uruguayan </option>
+                        <option value="Venezuelan">Venezuelan   </option>
+                        <option value="Vietnamese">Vietnamese   </option>
+                        <option value="Welsh">Welsh </option>
+                    </select>
+                    <div class="invalid-feedback">
+                        {{ errors.first('nationality') }}
+                    </div>
+                </div>
+                
                 <div class="text-right">
-                    <button type="submit" class="btn btn-danger mt-2"><i class="fa fa-check"></i> Book Now!</button>
+
+                    <button type="submit" class="btn btn-danger mt-2" v-if="!submitProgress"><i class="fa fa-check"></i> Book Now!</button>
+                    <button type="button" class="btn btn-danger mt-2" v-if="submitProgress">
+                        <i class="fa fa-circle-o-notch fa-spin"></i> Processing...</button>
                 </div>
             </form>
         </b-modal>
@@ -260,9 +374,16 @@
 </template>
 
 <script>
+    import Datepicker from 'vuejs-datepicker';
+    import moment from 'moment';
+    import vueImages from 'vue-images'
     export default {
         name: 'tour-package-show',
         props: ['tour_id'],
+        components: {
+            Datepicker,
+            vueImages: vueImages
+        },
         data () {
             return {
                 image: null,
@@ -276,7 +397,10 @@
                     main_image: '',
                     notes: '',
                     inclusions: '',
-                    status: ''
+                    status: '',
+                    from_date: '',
+                    to_date: '',
+                    photos: []
                 },
                 destinations: [],
                 destination: {
@@ -309,6 +433,19 @@
                 lastname: '',
                 email: '',
                 contact_no: '',
+                submitProgress: false,
+                nationality: '',
+                myDate: new Date(),
+                selectedDate: '',
+                disabled: {},
+                modalclose: true,
+                keyinput: true,
+                mousescroll: true,
+                showclosebutton: true,
+                showcaption: false,
+                imagecountseparator: 'of',
+                showimagecount: true,
+                showthumbnails: true
             }
         },
         methods: {
@@ -327,8 +464,11 @@
                 
                 this.image = files[0] 
             },
+            formatDate(date) {
+                return moment(date).format('MMMM DD, YYYY')
+            },
             fetch: function() {
-                axios.post('/admin/tour/show/' + this.tour_id)
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/show/' + this.tour_id)
                     .then((resp) => {
                         console.log(resp.data)
                         this.tour.name = resp.data.tour.name
@@ -341,6 +481,17 @@
                         this.tour.notes = resp.data.tour.notes
                         this.tour.inclusions = resp.data.tour.inclusions
                         this.prices = resp.data.prices
+                        this.tour.from_date = resp.data.tour.from_date
+                        this.tour.to_date = resp.data.tour.to_date
+                        this.disabled = {
+                            from: new Date(moment(resp.data.tour.to_date).format('YYYY'), moment(resp.data.tour.to_date).subtract(1, 'months').format('MM'), moment(resp.data.tour.to_date).format('DD')),
+                            to: new Date()
+                        }
+                        var p = resp.data.photos
+                        p.forEach(d => {
+                            this.tour.photos.push({'imageUrl': d.filepath, 'caption': 'Tour'})
+                        })
+                       
                     })
                     .catch((err) => {
                         console.log(err)
@@ -349,20 +500,36 @@
             submitBooking () {
                 this.$validator.validateAll().then((result) => {
                     if (result) {
-                        axios.post('/booking/submit', {
-                            day: this.day,
-                            month: this.month,
-                            year: this.year,
+                        this.submitProgress = true
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/booking/submit', {
+                            selectedDate: moment(this.selectedDate).format('YYYY-MM-DD'),
                             travel_options: this.travel_options,
                             firstname: this.firstname,
                             middlename: this.middlename,
                             lastname: this.lastname,
                             email: this.email,
                             contact_no: this.contact_no,
+                            nationality: this.nationality,
                             tour_id: this.tour_id
                         })
                         .then(resp => {
-                            console.log(resp)
+                            
+                            if (resp.data.status == 'ok')
+                            {
+                                this.submitProgress = false
+                                this.clearFields()
+                                this.$notify({
+                                    group: 'frontend',
+                                    type: 'success',
+                                    title: 'Booking sent successfully!',
+                                    text: 'Please check your email to guide you on completing your booking.',
+                                    duration: 60000,
+                                    speed: 500
+                                });
+
+                                this.$refs.booking.hide()
+                                console.log(resp)
+                            }
                         })
                         .catch(err => {
                             console.log(err)
@@ -370,10 +537,21 @@
                     }
                 })
                 
+            },
+            clearFields() {
+                this.selectedDate = ''
+                this.travel_options = ''
+                this.firstname = ''
+                this.middlename = ''
+                this.lastname = ''
+                this.email = ''
+                this.contact_no = ''
+                this.nationality = ''
             }
         },
-        mounted: function() {
+        created: function() {
             this.fetch()
+
         },
     }
 </script>

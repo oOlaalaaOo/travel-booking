@@ -134,7 +134,7 @@
         methods: {
 
             credentials() {
-                axios.post('/admin/account/credentials', {})
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/account/credentials', {})
                     .then((resp) => {
                         console.log(resp)
                         this.user.username = resp.data.credentials.email
@@ -149,7 +149,7 @@
                     if (result) {
                         
                         this.progressUsernameUpdate = true
-                        axios.post('/admin/account/credentials/username/update', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/account/credentials/username/update', {
                             email: this.user.username,
                         })
                         .then((resp) => {
@@ -196,7 +196,7 @@
                 this.$validator.validateAll(scope).then((result) => {
                     if (result) {
                         this.progressPasswordUpdate = true
-                        axios.post('/admin/account/credentials/password/update', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/account/credentials/password/update', {
                             password: this.pass.password,
                             current_password: this.pass.current_password
                         })

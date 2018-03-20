@@ -6,11 +6,18 @@ use Illuminate\Http\Request;
 
 use App\Tour;
 
+use App\Mail\ContactUsRequest;
+use Mail;
+use DB;
+
 class PageController extends Controller
 {
+    protected $site_name;
+
     public function __construct()
     {
-
+        $content = DB::table('configuration_contents')->where('title', 'site_name')->first();
+        $this->site_name = $content->content;
     }
 
     public function our_company()
@@ -18,7 +25,8 @@ class PageController extends Controller
         $company = \App\ConfigurationContent::where('title', 'company')->first();
     	return view('frontend.pages.our-company', [
             'active_link' => 'about-us',
-            'company' => $company
+            'company' => $company,
+            'site_name' => $this->site_name
         ]);
     }
 
@@ -29,7 +37,8 @@ class PageController extends Controller
     	return view('frontend.pages.mission', [
             'active_link' => 'about-us',
             'mission' => $mission,
-            'vision' => $vision
+            'vision' => $vision,
+            'site_name' => $this->site_name
         ]);
     }
 
@@ -44,6 +53,7 @@ class PageController extends Controller
     	return view('frontend.pages.news', [
             'active_link' => 'news',
             'posts' => $posts,
+            'site_name' => $this->site_name
         ]);
     }
 
@@ -54,6 +64,7 @@ class PageController extends Controller
         return view('frontend.pages.show-post', [
             'active_link' => 'news',
             'post' => $post,
+            'site_name' => $this->site_name
         ]);
     }
 
@@ -61,13 +72,22 @@ class PageController extends Controller
     {
     	return view('frontend.pages.contact-us', [
             'active_link' => 'contact-us',
+            'site_name' => $this->site_name
         ]);
+    }
+
+    public function send_contact_us(Request $request)
+    {
+        Mail::to('travelbooking68@gmail.com')->send(new ContactUsRequest($request->all()));
+        session()->flash('status', 'ok');
+        return redirect()->route('contact-us');
     }
 
     public function tour_packages()
     {
         return view('frontend.pages.tour-packages', [
             'active_link' => 'tour-packages',
+            'site_name' => $this->site_name
         ]);
     }
 
@@ -76,14 +96,16 @@ class PageController extends Controller
         $tour = Tour::findOrFail($tour_id);
         return view('frontend.pages.tour-package', [
             'active_link' => 'tour-packages',
-            'tour' => $tour
+            'tour' => $tour,
+            'site_name' => $this->site_name
         ]);
     }
 
     public function site_contents()
     {
         return view('backend.pages.cms.site-contents', [
-            'active_link' => 'site-contents'
+            'active_link' => 'site-contents',
+            'site_name' => $this->site_name
         ]);
     }
 
@@ -98,6 +120,7 @@ class PageController extends Controller
         $site_address = \App\ConfigurationContent::where('title', 'site_address')->first();
         $site_telephone = \App\ConfigurationContent::where('title', 'site_telephone')->first();
         $site_mobile = \App\ConfigurationContent::where('title', 'site_mobile')->first();
+        $book_guide = \App\ConfigurationContent::where('title', 'book_guide')->first();
 
         return response()->json([
             'company' => $company,
@@ -108,6 +131,7 @@ class PageController extends Controller
             'site_address' => $site_address,
             'site_telephone' => $site_telephone,
             'site_mobile' => $site_mobile,
+            'book_guide' => $book_guide
         ], 200);
     }
 
@@ -152,6 +176,11 @@ class PageController extends Controller
 
         $site_telephone->content = $request->input('site_telephone');
         $site_telephone->save();
+
+        $book_guide = \App\ConfigurationContent::where('title', 'book_guide')->first();
+
+        $book_guide->content = $request->input('book_guide');
+        $book_guide->save();
 
         return response()->json(['status' => 'ok'], 200);
     }

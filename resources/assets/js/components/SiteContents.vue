@@ -99,6 +99,15 @@
                             v-on:mouseover.once="fillContents"
                             ></tinymce>
                         </div>
+                        
+                        <div class="form-group">
+                            <h5 v-on:mouseover.once="fillContents">Book Guide</h5>
+                            <tinymce id="d4"
+                            v-model="book_guide"
+                            :plugins="tinymcePlugins"
+                            v-on:mouseover.once="fillContents"
+                            ></tinymce>
+                        </div>
 
                         <div class="form-group text-right">
                             <button type="submit" class="btn btn-success"><i class="fa fa-circle-o-notch fa-spin" v-if="result"></i> <i class="fa fa-check" v-if="!result"></i> <span v-if="result">Saved!</span> <span v-else>Save Contents</span></button>
@@ -125,6 +134,7 @@
                 site_mobile: '',
                 site_telephone: '',
                 site_email: '',
+                book_guide: '',
                 result: null,
                 tinymcePlugins: [
                     'advlist autolink lists link charmap print preview hr anchor pagebreak',
@@ -141,7 +151,7 @@
               this.$validator.validateAll().then((result) => {
                 if (result) {
                    this.result = true
-                   axios.post('/admin/site-contents/update', {
+                   axios.post('https://travelbooking2018.000webhostapp.com/public/admin/site-contents/update', {
                     mission: this.mission,
                     company: this.company,
                     vision: this.vision,
@@ -150,6 +160,7 @@
                     site_address: this.site_address,
                     site_mobile: this.site_mobile,
                     site_telephone: this.site_telephone,
+                    book_guide: this.book_guide
                    })
                    .then((resp) => {
                         if (resp.data.status == 'ok')
@@ -192,10 +203,11 @@
                 this.company = this.company + ' '
                 this.mission = this.mission + ' '
                 this.vision = this.vision + ' '
+                this.book_guide = this.book_guide + ' '
             },
 
             fetch () {
-                axios.post('/admin/site-contents', {
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/site-contents', {
 
                 })
                 .then(resp => {
@@ -208,6 +220,7 @@
                     this.site_address = resp.data.site_address.content
                     this.site_telephone = resp.data.site_telephone.content
                     this.site_mobile = resp.data.site_mobile.content
+                    this.book_guide = resp.data.book_guide.content
                 })
                 .catch(err => {
                     console.log(err)

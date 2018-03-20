@@ -37,7 +37,7 @@
         },
         methods: {
             fetch: function() {
-                axios.post('/admin/post/all')
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/post/all')
                     .then((resp) => {
                         this.posts = resp.data.posts
                         console.log(resp.data)
@@ -47,7 +47,7 @@
                     })
             },
             view_post: function(id) {
-                window.location.href = '/admin/post/show/' + id
+                window.location.href = 'https://travelbooking2018.000webhostapp.com/public/admin/post/show/' + id
             }
         }
     }

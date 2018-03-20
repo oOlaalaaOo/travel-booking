@@ -40,6 +40,22 @@ class TourController extends Controller
         }
     }
 
+    public function search(Request $request)
+    {
+        try
+        {
+            $tours = \DB::table('tours')->where('name', 'like', '%'.$request->input('tour_package').'%')->get();
+
+            return response()->json([
+                'tours' => $tours
+            ]);
+        }
+        catch(\Exception $e)
+        {
+            return response()->json(['errors' => $e->getMessage()]);
+        }
+    }
+
     public function add_view()
     {
     	return view('backend.pages.tour.add', [
@@ -79,9 +95,12 @@ class TourController extends Controller
             $tour->name = $request->input('name');
             $tour->slug = $name_lowered;
             $tour->description = $request->input('description');
+            $tour->description_quick = $request->input('xdescription');
             $tour->main_image = env('APP_URL') . 'uploads/' . $filename;
             $tour->notes = $request->input('notes');
             $tour->inclusions = $request->input('inclusions');
+            $tour->from_date = $request->input('from_date');
+            $tour->to_date = $request->input('to_date');
             $tour->published = false;
 
             if ($tour->save())
@@ -109,11 +128,14 @@ class TourController extends Controller
             
             $prices = Tour::findOrFail($tour_id)->prices;
 
+            $photos = Tour::findOrFail($tour_id)->photos;
+
             return response()->json([
                 'tour'          => $tour, 
                 'destinations'  => $destinations,
                 'details'       => $details,
-                'prices'        => $prices
+                'prices'        => $prices,
+                'photos'        => $photos
             ]);
         }
         catch(\Exception $e)
@@ -165,6 +187,7 @@ class TourController extends Controller
 
                 $tour->name = $request->input('name');
                 $tour->description = $request->input('description');
+                $tour->description_quick = $request->input('description_quick');
                 $tour->notes = $request->input('notes');
                 $tour->inclusions = $request->input('inclusions');
                 $tour->main_image = env('APP_URL') . 'uploads/' . $filename;
@@ -179,9 +202,11 @@ class TourController extends Controller
 
             $tour->name = $request->input('name');
             $tour->description = $request->input('description');
+            $tour->description_quick = $request->input('description_quick');
             $tour->notes = $request->input('notes');
             $tour->inclusions = $request->input('inclusions');
-
+            $tour->from_date = $request->input('from_date');
+            $tour->to_date = $request->input('to_date');
             if ($tour->save())
             {
                 return response()->json(['status' => 'ok']);

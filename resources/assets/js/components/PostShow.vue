@@ -153,7 +153,7 @@
         },
         methods: {
             fetch: function() {
-                axios.post('/admin/post/show/' + this.post_id)
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/post/show/' + this.post_id)
                     .then((resp) => {
                         console.log(resp.data)
                         this.post.title = resp.data.post.title
@@ -167,11 +167,11 @@
                     })
             },
             postDelete: function () {
-                axios.post('/admin/post/delete', {
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/post/delete', {
                     post_id: this.post_id
                 })
                 .then((resp) => {
-                    window.location.href = '/admin/post/all'
+                    window.location.href = 'https://travelbooking2018.000webhostapp.com/public/admin/post/all'
                 })
                 .catch((err) => {
                     console.log(err)
@@ -180,7 +180,7 @@
             postUpdate: function (scope) {
                 this.$validator.validateAll(scope).then((result) => {
                     if (result) {
-                        axios.post('/admin/post/update', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/post/update', {
                             post_id: this.post_id,
                             title: this.post.title,
                             content: this.post.content

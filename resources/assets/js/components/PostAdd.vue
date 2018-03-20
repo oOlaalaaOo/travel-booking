@@ -82,7 +82,7 @@
               this.$validator.validateAll().then((result) => {
                 if (result) {
                    this.result = true
-                   axios.post('/admin/post/add', {
+                   axios.post('https://travelbooking2018.000webhostapp.com/public/admin/post/add', {
                     title: this.title,
                     content: this.content,
                     type: this.type

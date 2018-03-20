@@ -83,7 +83,7 @@
         methods: {
 
             profile() {
-                axios.post('/admin/account/profile', {})
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/account/profile', {})
                     .then((resp) => {
                         console.log(resp)
                         this.name = resp.data.profile.name
@@ -92,7 +92,7 @@
                         this.created_at = resp.data.profile.created_at
                         this.updated_at = resp.data.profile.updated_at
                         if (resp.data.profile.photo == '') {
-                            this.photo = '/img/default-img-user.png'
+                            this.photo = 'https://travelbooking2018.000webhostapp.com/public/img/default-img-user.png'
                         } else {
                             this.photo = resp.data.profile.photo
                         }
@@ -121,7 +121,7 @@
                 this.$validator.validateAll().then((result) => {
                     if (result) {
                         this.progressUpdateProfile = true
-                        axios.post('/admin/account/profile/update', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/account/profile/update', {
                             name: this.name,
                             description: this.description,
                             photo: this.photo_url

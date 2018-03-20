@@ -1,5 +1,5 @@
 @include('backend._partials._header')
-<body style="font-family: 'Open Sans', sans-serif;">
+<body style="font-family: 'Open Sans', sans-serif; background-color: #f8f8f8">
 	
     @include('backend._partials._navbar')
 

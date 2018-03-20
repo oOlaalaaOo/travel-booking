@@ -28,6 +28,18 @@
                         {{ errors.first('main_photo') }}
                     </div>
                 </div>
+                <hr>
+                <h5>Please set the date for the tour package availability</h5>
+                <div class="form-group">
+                    <label>From Date: </label>
+                    <datepicker input-class="form-control" id="from_date" name="from_date" :disabled="disabled" v-model="from_date"></datepicker>
+                </div>
+                
+                <div class="form-group">
+                    <label>To Date: </label>
+                    <datepicker input-class="form-control" id="to_date" name="to_date" :disabled="disabled" v-model="to_date"></datepicker>
+                </div>
+                <hr>
                 <div class="form-group">
                     <label for="name">Tour Name/Title</label>
                     <input type="text" 
@@ -43,6 +55,14 @@
                     </div>
                 </div>
                 
+                <div class="form-group">
+                    <label for="xdescription">Quick Description (optional)</label>
+                    <tinymce id="d6" 
+                    v-model="xdescription"
+                    :plugins="tinymcePlugins"
+                    ></tinymce>
+                </div>
+
                 <div class="form-group">
                     <label for="description">Description (optional)</label>
                     <tinymce id="d1" 
@@ -84,13 +104,19 @@
 </template>
 
 <script>
+    import Datepicker from 'vuejs-datepicker';
+    import moment from 'moment';
     export default {
         name: 'tour-add',
+        components: {
+            Datepicker
+        },
         data() {
             return {
                 main_photo: '',
                 name: '',
                 description: '',
+                xdescription: '',
                 image: null,
                 imageUrl: '',
                 notes: '',
@@ -100,7 +126,13 @@
                     'advlist autolink lists link charmap print preview hr anchor pagebreak',
                     'searchreplace wordcount visualblocks visualchars code fullscreen',
                     'insertdatetime nonbreaking save table contextmenu directionality','template'
-                ]
+                ],
+                from_date: '',
+                to_date: '',
+                disabled: {
+                    to: new Date(), // Disable all dates up to specific date
+                    
+                },
             }
         },
         created: function() {
@@ -126,12 +158,15 @@
               this.$validator.validateAll().then((result) => {
                 if (result) {
                    this.result = true
-                   axios.post('/admin/tour/add', {
+                   axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/add', {
                     image: this.imageUrl,
                     name: this.name,
                     description: this.description,
+                    xdescription: this.xdescription,
                     notes: this.notes,
                     inclusions: this.inclusions,
+                    from_date: moment(this.from_date).format('YYYY-MM-DD'),
+                    to_date: moment(this.to_date).format('YYYY-MM-DD')
                    })
                    .then((resp) => {
                         if (resp.data.status == true)

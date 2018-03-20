@@ -15,10 +15,7 @@
                     <img class="card-img-top" :src="tour.main_image" alt="Card image cap">
                     <div class="card-body">
                         <h5 class="card-title">{{ tour.name }}</h5>
-                        <p class="card-text" v-html="tour.description"></p>
-                        <div class="text-right">
-                            
-                        </div>
+                        
                     </div>
                 </div>
             </div>
@@ -41,7 +38,7 @@
         methods: {
             fetch: function() {
                 this.pageLoading = true
-                axios.post('/admin/tour/all')
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/all')
                     .then((resp) => {
                         this.tours = resp.data.tours
                         this.pageLoading = false
@@ -51,7 +48,7 @@
                     })
             },
             view_tour: function(id) {
-                window.location.href = '/admin/tour/show/' + id
+                window.location.href = 'https://travelbooking2018.000webhostapp.com/public/admin/tour/show/' + id
             }
         }
     }

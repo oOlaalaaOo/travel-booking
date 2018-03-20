@@ -10,9 +10,11 @@
 
                         <button class="btn btn-dark btn-sm mb-1" type="button" v-b-modal.priceModalAdd><i class="fa fa-edit"></i> Set Tour Price</button>
                         
-                        <button class="btn btn-primary btn-sm mb-1" type="button" @click="xDescription"><i class="fa fa-edit"></i> Update Tour Contents</button>
+                        <button class="btn btn-primary btn-sm mb-1" type="button" @click="updateContent"><i class="fa fa-edit"></i> Update Tour Contents</button>
 
                         <button class="btn btn-success btn-sm mb-1" type="button" v-b-modal.destinationModalAdd><i class="fa fa-plus"></i> New Destination</button>
+
+                        <button class="btn btn-success btn-sm mb-1" type="button" v-b-modal.photosAdd><i class="fa fa-plus"></i> Photos</button>
                     </div>
                 </div>
             </div>
@@ -20,10 +22,25 @@
                 <div class="card">
                     <img class="card-img-top" :src="tour.main_image" alt="Card image cap">
                     <div class="card-body">
+                        <div class="row">
+                         <div class="col-sm-12">
+                          <vue-images :imgs="tour.photos"
+                                        :modalclose="modalclose"
+                                        :keyinput="keyinput"
+                                        :mousescroll="mousescroll"
+                                        :showclosebutton="showclosebutton"
+                                        :showcaption="showcaption"
+                                        :imagecountseparator="imagecountseparator"
+                                        :showimagecount="showimagecount"
+                                        :showthumbnails="showthumbnails">
+                            </vue-images>
+                          </div>
+                        </div>
+                        <hr>
                         <small>[Title]</small>
                         <h5 class="card-title">{{ tour.name }}</h5>
-                        <small>[Description]</small>
-                        <span class="card-text" v-html="tour.description"></span>
+                        <small>[Quick Description]</small>
+                        <span class="card-text" v-html="tour.description_quick"></span>
                         <br />
                         <small>[Notes]</small>
                         <span class="card-text" v-html="tour.notes"></span>
@@ -234,6 +251,8 @@
             <button type="button" class="btn btn-danger mt-2" @click.prevent="tourDelete">Go delete it!</button>
 
         </b-modal>
+
+       
         
         <b-modal id="destinationModalAdd" hide-footer centered title="Action: Add Destination">
           <form @submit.prevent="destinationAdd(destination)">
@@ -273,10 +292,35 @@
           </form>
         </b-modal>
 
+        <b-modal ref="photosAdd" id="photosAdd" hide-footer centered title="Action: More Photos">
+          <form @submit.prevent="addPhoto(photos)">
+          <div class="form-group">
+                <label for="photo">More Photos</label><br />
+                <img class="img-thumbnail" style="width: 100%; height: 450px" :src="more_photo" v-if="photo_url == ''" />
+                <img class="img-thumbnail" style="width: 100%; height: 450px" :src="photo_url" v-else="photo_url != ''" />
+                <br />
+                <br />
+                <input
+                type="file"
+                class="form-control"
+                accept="image/*"
+                id="photos/photo"
+                name="photo"
+                v-validate="'required'"
+                :class="{'input': true, 'is-invalid': errors.has('photo') }"
+                @change="imageChanged2"
+                />
+                <div class="invalid-feedback">
+                  {{ errors.first('photo') }}
+                </div>
+          </div>
+
+          <button type="submmit" class="btn btn-danger mt-2">Add Photo</button>
+          </form>
+        </b-modal>
 
         <b-modal ref=tourModalUpdate hide-footer size="lg" centered title="Action: Update Tour Details">
           <form @submit.prevent="tourUpdate('tour')" enctype="multipart/form-data">
-            <div class="form-group">
               <div class="form-group">
                 <label for="main_photo">Main Photo</label><br />
                 <img class="img-thumbnail" style="width: 100%; height: 450px" :src="tour.main_image" v-if="imageUrl == ''" />
@@ -297,7 +341,18 @@
                   {{ errors.first('main_photo') }}
                 </div>
               </div>
-            </div>
+            <hr>
+                <h5>Please set the date for the tour package availability</h5>
+                <div class="form-group">
+                    <label>From Date: </label>
+                    <datepicker input-class="form-control" id="from_date" name="from_date" :disabled="disabled" v-model="tour.from_date"></datepicker>
+                </div>
+                
+                <div class="form-group">
+                    <label>To Date: </label>
+                    <datepicker input-class="form-control" id="to_date" name="to_date" :disabled="disabled" v-model="tour.to_date"></datepicker>
+                </div>
+                <hr>
             <div class="form-group">
               <label for="name">Tour Name/Title</label>
               <input type="text"
@@ -314,9 +369,19 @@
             </div>
             
             <div class="form-group">
-              <label>Description (optional)</label>
+              <label for="description_quick">Quick Description (optional)</label>
               <tinymce
               id="d1"
+              :plugins="tinymcePlugins"
+              :value="tour.description_quick"
+              v-model="tour.description_quick"
+              ></tinymce>
+            </div>
+
+            <div class="form-group">
+              <label>Description (optional)</label>
+              <tinymce
+              id="d2"
               :plugins="tinymcePlugins"
               :value="tour.description"
               v-model="tour.description"
@@ -327,7 +392,7 @@
             <div class="form-group">
               <label>Notes (optional)</label>
               <tinymce
-              id="d2"
+              id="d3"
               :plugins="tinymcePlugins"
               :value="tour.notes"
               v-model="tour.notes"
@@ -338,7 +403,7 @@
             <div class="form-group">
               <label>Inclusions (optional)</label>
               <tinymce
-              id="d3"
+              id="d4"
               :plugins="tinymcePlugins"
               :value="tour.inclusions"
               v-model="tour.inclusions"
@@ -353,23 +418,40 @@
 </template>
 
 <script>
+import Datepicker from 'vuejs-datepicker';
+import vueImages from 'vue-images'
+    import moment from 'moment';
     export default {
         name: 'tour-show',
         props: ['tour_id'],
+        components: {
+            Datepicker,
+            vueImages: vueImages
+        },
         data () {
             return {
                 image: null,
                 imageUrl: '',
                 main_photo: '',
+                photo_url: '',
+                more_photo: '',
+                photos: {
+                  photo: '',
+                },
                 tour: {
                     name: '',
                     description: '',
+                    description_quick: '',
                     created_at: '',
                     updated_at: '',
                     main_image: '',
                     notes: '',
                     inclusions: '',
-                    status: ''
+                    status: '',
+                    from_date: '',
+                    to_date: '',
+                    photos: []
+                  
                 },
                 destinations: [],
                 destination: {
@@ -393,7 +475,18 @@
                     'advlist autolink lists link charmap print preview hr anchor pagebreak',
                     'searchreplace wordcount visualblocks visualchars code fullscreen',
                     'insertdatetime nonbreaking save table contextmenu directionality','template'
-                ]
+                ],
+                disabled: {
+                      to: new Date(), // Disable all dates up to specific date
+                },
+                modalclose: true,
+                keyinput: true,
+                mousescroll: true,
+                showclosebutton: true,
+                showcaption: true,
+                imagecountseparator: 'of',
+                showimagecount: true,
+                showthumbnails: true
             }
         },
         methods: {
@@ -412,12 +505,27 @@
                 
                 this.image = files[0] 
             },
+            imageChanged2: function (event) {
+
+                const files = event.target.files
+
+                const fileReader = new FileReader()
+
+                fileReader.addEventListener('load', () => {
+                    this.photo_url = fileReader.result
+                })
+
+                fileReader.readAsDataURL(files[0])
+                this.photos.photo = files[0].name 
+                
+            },
             fetch: function() {
-                axios.post('/admin/tour/show/' + this.tour_id)
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/show/' + this.tour_id)
                     .then((resp) => {
                         console.log(resp.data)
                         this.tour.name = resp.data.tour.name
                         this.tour.description = resp.data.tour.description
+                        this.tour.description_quick = resp.data.tour.description_quick
                         this.tour.created_at = resp.data.tour.created_at
                         this.tour.updated_at = resp.data.tour.updated_at
                         this.tour.status = resp.data.tour.published
@@ -426,6 +534,13 @@
                         this.tour.notes = resp.data.tour.notes
                         this.tour.inclusions = resp.data.tour.inclusions
                         this.prices = resp.data.prices
+                        this.tour.from_date = resp.data.tour.from_date
+                        this.tour.to_date = resp.data.tour.to_date
+                        // this.tour.photos = resp.data.photos
+                        var p = resp.data.photos
+                        p.forEach(d => {
+                            this.tour.photos.push({'imageUrl': d.filepath, 'caption': ''})
+                        })
                     })
                     .catch((err) => {
                         console.log(err)
@@ -436,7 +551,7 @@
                     tour_id: this.tour_id
                 })
                 .then((resp) => {
-                    window.location.href = '/admin/tour/all'
+                    window.location.href = 'https://travelbooking2018.000webhostapp.com/public/admin/tour/all'
                 })
                 .catch((err) => {
                     console.log(err)
@@ -448,7 +563,7 @@
                 
             },
             priceDelete: function () {
-              axios.post('/admin/tour/price/delete', {
+              axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/price/delete', {
                     price_id: this.price_id
                 })
                 .then((resp) => {
@@ -461,7 +576,7 @@
             },
             setPriceDetailUpdate: function (id) {
                 this.$refs.priceModalUpdate.show()
-                axios.get('/admin/tour/price/show/' + id)
+                axios.get('https://travelbooking2018.000webhostapp.com/public/admin/tour/price/show/' + id)
                 .then((resp) => {
                     this.price.id = resp.data.price.id
                     this.price.type = resp.data.price.type
@@ -476,7 +591,7 @@
             priceUpdate: function (scope) {
                 this.$validator.validateAll(scope).then((result) => {
                     if (result) {
-                        axios.post('/admin/tour/price/update/', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/price/update/', {
                             price_id: this.price.id,
                             type : this.price.type,
                             capacity_type : this.price.capacity_type,
@@ -503,16 +618,45 @@
                 })
                 
             },
+            addPhoto(scope) {
+              this.$validator.validateAll(scope).then(result => {
+                if (result) {
+                  axios.post('https://travelbooking2018.000webhostapp.com/public/admin/photos/add', {
+                    tour_id: this.tour_id,
+                    image: this.photo_url
+                  })
+                  .then(resp => {
+                    console.log(resp)
+                    this.$refs.photosAdd.hide()
+                    this.$notify({
+                      group: 'backend',
+                      type: 'success',
+                      title: 'Success!',
+                      text: 'Action processed successfully',
+                      duration: 5000,
+                      speed: 500
+                    });
+                    this.fetch()
+                  })
+                  .catch(err => {
+                    console.log(err)
+                  })
+                }
+              })
+            },
             tourUpdate: function (scope) {
                 this.$validator.validateAll(scope).then((result) => {
                     if (result) {
-                        axios.post('/admin/tour/update', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/update', {
                             tour_id: this.tour_id,
                             image: this.imageUrl,
                             name: this.tour.name,
                             description: this.tour.description,
+                            description_quick: this.tour.description_quick,
                             notes: this.tour.notes,
                             inclusions: this.tour.inclusions,
+                            from_date: moment(this.tour.from_date).format('YYYY-MM-DD'),
+                            to_date: moment(this.tour.to_date).format('YYYY-MM-DD')
                         })
                         .then((resp) => {
                             this.$refs.tourModalUpdate.hide()
@@ -535,16 +679,17 @@
             getStatus: function (status) {
                 return status
             },
-            xDescription: function() {
+            updateContent: function() {
                 this.tour.description = this.tour.description + ' '
                 this.tour.notes = this.tour.notes + ' '
                 this.tour.inclusions = this.tour.inclusions + ' '
+                this.tour.description_quick = this.tour.description_quick + ' '
                 this.$refs.tourModalUpdate.show()
             },
             destinationAdd: function (scope) {
                 this.$validator.validateAll(scope).then((result) => {
                     if (result) {
-                        axios.post('/admin/tour/destination/add', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/destination/add', {
                             tour_id: this.tour_id,
                             name: this.destination.name,
                             fee: this.destination.fee
@@ -574,7 +719,7 @@
                 })
             },
             destinationDelete: function (id) {
-                axios.post('/admin/tour/destination/delete', {
+                axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/destination/delete', {
                     destination_id: id,
                 })
                 .then((resp) => {
@@ -595,7 +740,7 @@
             priceAdd: function (scope) {
                 this.$validator.validateAll(scope).then((result) => {
                     if (result) {
-                        axios.post('/admin/tour/price/add', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/tour/price/add', {
                             tour_id: this.tour_id,
                             type: this.price.type,
                             capacity_type: this.price.capacity_type,

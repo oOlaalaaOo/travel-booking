@@ -1,14 +1,14 @@
 <template>
     <div class="row">
-        <div class="col-sm-4 offset-4 mt-5">
+        <div class="col-sm-12 col-md-4 offset-md-4 mt-5">
             <div class="card" v-animate-css.once="'fadeIn'">
                 <div class="card-body">
                     <form @submit.prevent="login">
                         <div class="row mb-4">
-                            <div class="col-sm-4">
+                            <div class="col-sm-12 col-sm-4">
                                 <img :src="appLogo" class="img-responsive" alt="travel-booking-logo" width="100" />
                             </div>
-                            <div class="col-sm-8">
+                            <div class="col-sm-12 col-sm-8">
                                 <h3 class="mt-4">Travel Booking</h3>
                                 <small class="">
                                     Magallanes St, Cebu City, Philippines
@@ -88,7 +88,7 @@
                     if (result) {
                         this.disableSignin = true
                         this.loginResponse = ''
-                        axios.post('/admin/login', {
+                        axios.post('https://travelbooking2018.000webhostapp.com/public/admin/login', {
                             username: this.username,
                             password: this.password
                         })
@@ -104,7 +104,7 @@
                                   speed: 500
                                 });
                                 setTimeout(function () {
-                                    window.location.href = '/admin/dashboard'
+                                    window.location.href = 'https://travelbooking2018.000webhostapp.com/public/admin/dashboard'
                                 }, 3000)
 
                             } else {
@@ -139,7 +139,7 @@
             },
 
             setAppLogo() {
-                this.appLogo = '/img/icon.png'
+                this.appLogo = 'https://travelbooking2018.000webhostapp.com/public/img/icon.png'
             }
         }
     }

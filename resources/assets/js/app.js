@@ -15,6 +15,7 @@ import velocity      from 'velocity-animate'
 import VModal from 'vue-js-modal'
 import { Modal } from 'bootstrap-vue/es/components';
 import { Button } from 'bootstrap-vue/es/components';
+import VueCharts from 'vue-charts';
 
 /**
  * Next, we will create a fresh Vue application instance and attach it to
@@ -22,13 +23,13 @@ import { Button } from 'bootstrap-vue/es/components';
  * or customize the JavaScript scaffolding to fit your unique needs.
  */
 
-Vue.use(VeeValidate);
-Vue.use(VAnimateCss);
+Vue.use(VeeValidate)
+Vue.use(VAnimateCss)
 Vue.use(Notifications, {velocity})
 Vue.use(VModal)
-Vue.use(Modal);
-Vue.use(Button);
-Vue.component('tinymce', tinymce);
+Vue.use(Modal)
+Vue.use(Button)
+Vue.use(VueCharts)
 
 Vue.component('tour-all', require('./components/TourAll.vue'));
 Vue.component('tour-add', require('./components/TourAdd.vue'));
@@ -48,6 +49,9 @@ Vue.component('account-credentials', require('./components/AccountCredentials.vu
 
 Vue.component('site-contents', require('./components/SiteContents.vue'));
 
+Vue.component('report', require('./components/Report.vue'));
+
+Vue.component('tinymce', tinymce);
 const app = new Vue({
     el: '#app',
 });

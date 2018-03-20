@@ -4,3 +4,16 @@ to do list:
 - reservation
 - reservation list
 - handling reservation
+
+
+
+
+reservation status:
+-pending (not yet payed)
+-payed (payed, the user has send control #)
+-confirm (confirming payments)
+-waiting (the reservation is confirmed and waiting for the travel date)
+
+
+-serve (if the travel date has meet the 'serve' button will show)
+-finish (the user is finished on his travel)

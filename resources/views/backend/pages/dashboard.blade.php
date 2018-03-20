@@ -14,4 +14,37 @@
 			</button>
 		</div>
 	</div>
+	<div class="row">
+		<div class="col-sm-8">
+			<report></report>
+		</div>
+		<div class="col-sm-4">
+			<div class="card">
+				<div class="card-body"> 
+					@if(count($bookings_today) > 0)
+					<h4>Bookings Today</h4>
+					<hr>
+					<ul class="list-group">
+						
+						@foreach($bookings_today as $bt)
+					  		<li class="list-group-item">
+					  			{{ $bt->tour->name }}
+					  			<br />
+					  			<small>{{ ucfirst($bt->status) }}</small>
+					  			<br />
+					  			<small>{{ date('M-d-Y', strtotime($bt->travel_date)) }}</small>
+					  			<br />
+					  			<small>{{ ucfirst($bt->firstname) . ' ' . ucfirst($bt->middlename) . ' ' . ucfirst($bt->lastname) . ' - ' . ucfirst($bt->nationality) }}</small>
+					  		</li>
+						@endforeach
+						
+
+					</ul>
+					@else
+						<h4 class="text-center">No Bookings Today</h4>
+					@endif
+				</div>
+			</div>
+		</div>
+	</div>
 @endsection

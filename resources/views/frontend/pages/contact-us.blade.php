@@ -7,7 +7,13 @@
 				<div class="card-body">
 					<h3>Please fill up the form if you want to contact us</h3>
 					<hr>
-					<form>
+					<form action="{{ route('contact-us.send') }}" method="post">
+						{{ csrf_field() }}
+						@if(session()->has('status'))
+							<div class="alert alert-primary" role="alert">
+							  Request have been sent successfully!
+							</div>
+						@endif
 						<div class="form-group">
 							<label for="name">Name: </label>
 							<input type="text" name="name" class="form-control" />
